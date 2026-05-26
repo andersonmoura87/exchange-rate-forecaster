@@ -41,8 +41,8 @@ def test_predict_returns_prediction_when_model_loaded(client: TestClient) -> Non
     mock_rate = 4.95
 
     with (
-        patch("src.serving.predictor.model_loaded", return_value=True),
-        patch("src.serving.predictor.predict", return_value=mock_rate),
+        patch("src.serving.main.model_loaded", return_value=True),
+        patch("src.serving.main.predict", return_value=mock_rate),
     ):
         resp = client.post(
             "/predict",
