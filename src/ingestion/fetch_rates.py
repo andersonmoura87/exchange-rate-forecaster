@@ -19,7 +19,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = "https://api.frankfurter.app"
+BASE_URL = "https://api.frankfurter.dev/v1"
 RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 
 SUPPORTED_PAIRS = [
@@ -45,13 +45,9 @@ def fetch_time_series(
     end: date,
 ) -> pd.DataFrame:
     """Returns a tidy DataFrame with columns [date, base, target, rate]."""
-    params = {
-        "from": start.isoformat(),
-        "to": end.isoformat(),
-        "base": base,
-        "symbols": target,
-    }
-    data = _get(f"{BASE_URL}/{start}/{end}", params)
+    # Frankfurter v1 usa ".." entre datas no path, sem parâmetros from/to
+    params = {"base": base, "symbols": target}
+    data = _get(f"{BASE_URL}/{start}..{end}", params)
     rates = data.get("rates", {})
 
     records = [

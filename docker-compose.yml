@@ -39,7 +39,7 @@ services:
 
   # ── MLflow tracking server ──────────────────────────────────────────────────
   mlflow:
-    image: ghcr.io/mlflow/mlflow:v2.12.1
+    image: ghcr.io/mlflow/mlflow:v2.19.0
     container_name: ml_mlflow
     restart: unless-stopped
     depends_on:
@@ -52,13 +52,8 @@ services:
       - mlflow-artifacts:/mlflow/artifacts
     networks:
       - ml-net
-    command: >
-      bash -c "pip install psycopg2-binary -q && mlflow server
-        --backend-store-uri postgresql://mlflow:${POSTGRES_PASSWORD:-mlflow_secret}@postgres:5432/mlflow
-        --default-artifact-root /mlflow/artifacts
-        --host 0.0.0.0
-        --port 5000
-        --workers 2"
+    command: >-
+      bash -c "pip install psycopg2-binary -q && mlflow server --backend-store-uri postgresql://mlflow:${POSTGRES_PASSWORD:-mlflow_secret}@postgres:5432/mlflow --default-artifact-root /mlflow/artifacts --host 0.0.0.0 --port 5000 --workers 2"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
       interval: 15s
