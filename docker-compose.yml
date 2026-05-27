@@ -53,18 +53,18 @@ services:
     networks:
       - ml-net
     command: >
-      mlflow server
+      bash -c "pip install psycopg2-binary -q && mlflow server
         --backend-store-uri postgresql://mlflow:${POSTGRES_PASSWORD:-mlflow_secret}@postgres:5432/mlflow
         --default-artifact-root /mlflow/artifacts
         --host 0.0.0.0
         --port 5000
-        --workers 2
+        --workers 2"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
       interval: 15s
       timeout: 5s
-      retries: 5
-      start_period: 20s
+      retries: 8
+      start_period: 60s
     logging: *default-logging
 
   # ── Training job (runs once, exits) ────────────────────────────────────────
@@ -122,8 +122,10 @@ services:
     container_name: ml_nginx
     restart: unless-stopped
     depends_on:
-      - serving
-      - mlflow
+      mlflow:
+        condition: service_started
+      serving:
+        condition: service_started
     ports:
       - "80:80"
       - "443:443"
