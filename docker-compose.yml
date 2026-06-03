@@ -10,6 +10,7 @@ x-logging: &default-logging
 networks:
   ml-net:
     driver: bridge
+    name: ml-net
 
 volumes:
   mlflow-data:

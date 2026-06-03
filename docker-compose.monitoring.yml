@@ -25,6 +25,7 @@ services:
       - "--storage.tsdb.retention.time=30d"
       - "--web.enable-lifecycle"
       - "--web.enable-admin-api"
+    user: "0"
     networks:
       - ml-net
     ports:
